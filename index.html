@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>早安圖生成器（最終版＋字體控制）</title>
+  <title>早安圖生成器（最終版＋顯示圖片）</title>
   <style>
     body {
       font-family: sans-serif;
@@ -33,10 +33,15 @@
     button:hover {
       background-color: #45a049;
     }
+    #outputImage {
+      margin-top: 20px;
+      max-width: 100%;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
-  <h2>🌅 早安圖生成器（最終版＋字體控制）</h2>
+  <h2>🌅 早安圖生成器（最終版＋顯示圖片）</h2>
   <input type="file" id="upload" accept="image/*"><br>
   
   <select id="city">
@@ -62,6 +67,10 @@
   <canvas id="canvas"></canvas>
   <br>
   <button onclick="download()">下載圖片</button>
+  <button onclick="showImage()">顯示圖片</button>
+  
+  <br>
+  <img id="outputImage" alt="生成的圖片將顯示在這裡">
 
   <script>
     const canvas = document.getElementById("canvas");
@@ -150,7 +159,6 @@
       const weatherInfo = await getWeather(city);
       const style = pickRandomStyle();
 
-      // 讀取使用者設定的字體大小
       const topSize = parseFloat(document.getElementById("topSize").value);
       const bottomSize = parseFloat(document.getElementById("bottomSize").value);
 
@@ -181,6 +189,12 @@
         link.click();
         document.body.removeChild(link);
       }
+    }
+
+    // 顯示圖片（方便右鍵另存或長按存檔）
+    function showImage() {
+      const imageURL = canvas.toDataURL("image/png");
+      document.getElementById("outputImage").src = imageURL;
     }
   </script>
 </body>

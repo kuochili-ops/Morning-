@@ -97,6 +97,7 @@
       ctx.fillText(text, x, y);
     }
 
+    // 日期與星期
     function getDateInfo() {
       const today = new Date();
       const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
@@ -104,14 +105,40 @@
       return `${dateStr} ${weekStr}`;
     }
 
+    // 農曆 API 範例（需替換成你自己的 API Key）
     async function getLunarDate() {
-      return "農曆十月初四"; // TODO: 串接農曆 API
+      try {
+        const today = new Date();
+        const y = today.getFullYear();
+        const m = today.getMonth() + 1;
+        const d = today.getDate();
+        const response = await fetch(`https://api.binstd.com/lunar?date=${y}-${m}-${d}&appkey=你的農曆API_KEY`);
+        const data = await response.json();
+        return `農曆${data.result.lunar}`;
+      } catch {
+        return "農曆日期取得失敗";
+      }
     }
 
+    // 天氣 API（中央氣象局，使用你的授權碼）
     async function getWeather(city) {
-      return `天氣：晴，氣溫 22~28℃`; // TODO: 串接中央氣象局 API
+      try {
+        const response = await fetch("https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWA-A6F3874E-27F3-4AA3-AF5A-96B365798F79&format=JSON");
+        const data = await response.json();
+        const location = data.records.location.find(loc => loc.locationName === city);
+        if (location) {
+          const wx = location.weatherElement.find(el => el.elementName === "Wx").time[0].parameter.parameterName;
+          const minT = location.weatherElement.find(el => el.elementName === "MinT").time[0].parameter.parameterName;
+          const maxT = location.weatherElement.find(el => el.elementName === "MaxT").time[0].parameter.parameterName;
+          return `天氣：${wx}，氣溫 ${minT}~${maxT}℃`;
+        }
+        return "天氣資料取得失敗";
+      } catch {
+        return "天氣資料取得失敗";
+      }
     }
 
+    // 生成圖片
     async function generate() {
       if (!img.src) return alert("請先上傳圖片！");
       canvas.width = img.width;
@@ -139,6 +166,7 @@
       });
     }
 
+    // 下載圖片
     function download() {
       const link = document.createElement("a");
       link.href = canvas.toDataURL("image/png");

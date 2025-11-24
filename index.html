@@ -22,13 +22,29 @@
 <body>
   <h2>🌅 早安圖生成器</h2>
   <input type="file" id="upload" accept="image/*"><br>
-  <select id="region">
-    <option value="台北市北投區">台北市北投區</option>
-    <option value="台中市西屯區">台中市西屯區</option>
-    <option value="高雄市鼓山區">高雄市鼓山區</option>
-    <option value="新竹市東區">新竹市東區</option>
-    <option value="花蓮縣花蓮市">花蓮縣花蓮市</option>
+  
+  <!-- 縣市選單 -->
+  <select id="city">
+    <option value="台北市">台北市</option>
+    <option value="新北市">新北市</option>
+    <option value="桃園市">桃園市</option>
+    <option value="台中市">台中市</option>
+    <option value="台南市">台南市</option>
+    <option value="高雄市">高雄市</option>
+    <option value="新竹市">新竹市</option>
+    <option value="嘉義市">嘉義市</option>
+    <option value="基隆市">基隆市</option>
+    <option value="宜蘭縣">宜蘭縣</option>
+    <option value="花蓮縣">花蓮縣</option>
+    <option value="台東縣">台東縣</option>
+    <option value="屏東縣">屏東縣</option>
+    <option value="苗栗縣">苗栗縣</option>
+    <option value="彰化縣">彰化縣</option>
+    <option value="南投縣">南投縣</option>
+    <option value="雲林縣">雲林縣</option>
+    <option value="嘉義縣">嘉義縣</option>
   </select>
+  
   <button onclick="generate()">生成圖片</button>
   <br>
   <canvas id="canvas"></canvas>
@@ -53,10 +69,11 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
-    function drawTextWithStroke(text, x, y, fontSize, fillColor, strokeColor) {
+    function drawTextWithStroke(text, x, y, fontSizeRatio, fillColor, strokeColor) {
+      const fontSize = Math.round(canvas.height * fontSizeRatio);
       ctx.font = `bold ${fontSize}px sans-serif`;
       ctx.textAlign = "center";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = Math.max(2, fontSize / 15);
       ctx.strokeStyle = strokeColor;
       ctx.fillStyle = fillColor;
       ctx.strokeText(text, x, y);
@@ -69,20 +86,20 @@
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      const region = document.getElementById("region").value;
+      const city = document.getElementById("city").value;
 
       // 上方問候語：紅字白框
-      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, 80, 40, "red", "white");
+      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.1, 0.06, "red", "white");
 
       // 下方資訊：白字紅框
       const lines = [
-        `📍 ${region}`,
+        `📍 ${city}`,
         "📅 2025年11月24日 星期一",
         "🌙 農曆十月初四",
         "☀️ 天氣：晴，氣溫 22~28℃"
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height - 140 + i * 30, 24, "white", "red");
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.85 + i * canvas.height * 0.05, 0.04, "white", "red");
       });
     }
 

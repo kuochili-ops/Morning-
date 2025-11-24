@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>早安圖生成器</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
+    canvas { border: 1px solid #ccc; margin-top: 20px; }
+    input, button { margin: 10px; }
+  </style>
+</head>
+<body>
+  <h2>🌅 早安圖生成器</h2>
+  <input type="file" id="upload" accept="image/*">
+  <button onclick="generate()">生成圖片</button>
+  <br>
+  <canvas id="canvas" width="600" height="800"></canvas>
+  <br>
+  <button onclick="download()">下載圖片</button>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let img = new Image();
+
+    document.getElementById("upload").addEventListener("change", function(e) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        img.src = event.target.result;
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    });
+
+    function generate() {
+      if (!img.src) return alert("請先上傳圖片！");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // 上方問候語
+      ctx.font = "bold 36px sans-serif";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText("👋 親友們，早安！", canvas.width / 2, 80);
+
+      // 下方資訊
+      ctx.font = "24px sans-serif";
+      const lines = [
+        "📍 台北市北投區",
+        "📅 2025年11月24日 星期一",
+        "🌙 農曆十月初四",
+        "☀️ 天氣：晴，氣溫 22~28℃"
+      ];
+      lines.forEach((line, i) => {
+        ctx.fillText(line, canvas.width / 2, canvas.height - 120 + i * 30);
+      });
+    }
+
+    function download() {
+      const link = document.createElement("a");
+      link.download = "早安圖.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  </script>
+</body>
+</html>

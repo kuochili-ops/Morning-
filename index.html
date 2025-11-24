@@ -12,18 +12,26 @@
     canvas {
       border: 1px solid #ccc;
       margin-top: 20px;
+      max-width: 100%;
     }
-    input, button {
+    input, select, button {
       margin: 10px;
     }
   </style>
 </head>
 <body>
   <h2>🌅 早安圖生成器</h2>
-  <input type="file" id="upload" accept="image/*">
+  <input type="file" id="upload" accept="image/*"><br>
+  <select id="region">
+    <option value="台北市北投區">台北市北投區</option>
+    <option value="台中市西屯區">台中市西屯區</option>
+    <option value="高雄市鼓山區">高雄市鼓山區</option>
+    <option value="新竹市東區">新竹市東區</option>
+    <option value="花蓮縣花蓮市">花蓮縣花蓮市</option>
+  </select>
   <button onclick="generate()">生成圖片</button>
   <br>
-  <canvas id="canvas" width="600" height="800"></canvas>
+  <canvas id="canvas"></canvas>
   <br>
   <button onclick="download()">下載圖片</button>
 
@@ -36,7 +44,11 @@
       const reader = new FileReader();
       reader.onload = function(event) {
         img.src = event.target.result;
-        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
       };
       reader.readAsDataURL(e.target.files[0]);
     });
@@ -53,14 +65,18 @@
 
     function generate() {
       if (!img.src) return alert("請先上傳圖片！");
+      canvas.width = img.width;
+      canvas.height = img.height;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const region = document.getElementById("region").value;
 
       // 上方問候語：紅字白框
       drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, 80, 40, "red", "white");
 
       // 下方資訊：白字紅框
       const lines = [
-        "📍 台北市北投區",
+        `📍 ${region}`,
         "📅 2025年11月24日 星期一",
         "🌙 農曆十月初四",
         "☀️ 天氣：晴，氣溫 22~28℃"

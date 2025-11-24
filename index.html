@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>早安圖生成器（最終版）</title>
+  <title>早安圖生成器（最終版＋字體控制）</title>
   <style>
     body {
       font-family: sans-serif;
@@ -36,7 +36,7 @@
   </style>
 </head>
 <body>
-  <h2>🌅 早安圖生成器（最終版）</h2>
+  <h2>🌅 早安圖生成器（最終版＋字體控制）</h2>
   <input type="file" id="upload" accept="image/*"><br>
   
   <select id="city">
@@ -51,6 +51,11 @@
     <option value="花蓮縣">花蓮縣</option>
     <option value="臺東縣">臺東縣</option>
   </select>
+  
+  <br>
+  上排字大小：<input type="number" id="topSize" value="0.08" step="0.01">  
+  下排字大小：<input type="number" id="bottomSize" value="0.04" step="0.01">  
+  <br>
   
   <button onclick="generate()">生成圖片</button>
   <br>
@@ -145,16 +150,20 @@
       const weatherInfo = await getWeather(city);
       const style = pickRandomStyle();
 
-      // 上方問候語（移除手掌 emoji）
-      drawTextWithStroke("親友們，早安！", canvas.width / 2, canvas.height * 0.15, 0.08, style);
+      // 讀取使用者設定的字體大小
+      const topSize = parseFloat(document.getElementById("topSize").value);
+      const bottomSize = parseFloat(document.getElementById("bottomSize").value);
 
-      // 下方資訊（字體加大到 0.05）
+      // 上方問候語
+      drawTextWithStroke("親友們，早安！", canvas.width / 2, canvas.height * 0.15, topSize, style);
+
+      // 下方資訊
       const lines = [
         `📅 ${dateInfo}`,
         `☀️ ${weatherInfo}`
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.75 + i * canvas.height * 0.08, 0.05, style);
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.75 + i * canvas.height * 0.08, bottomSize, style);
       });
     }
 

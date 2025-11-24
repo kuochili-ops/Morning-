@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>早安圖生成器（最終版＋顯示圖片）</title>
+  <title>早安圖生成器（字體控制＋排版確認）</title>
   <style>
     body {
       font-family: sans-serif;
@@ -19,9 +19,9 @@
       max-width: 100%;
     }
     input, select, button {
-      margin: 12px;
+      margin: 8px;
       font-size: 18px;
-      padding: 8px 14px;
+      padding: 6px 12px;
       border-radius: 6px;
     }
     button {
@@ -41,7 +41,7 @@
   </style>
 </head>
 <body>
-  <h2>🌅 早安圖生成器（最終版＋顯示圖片）</h2>
+  <h2>🌅 早安圖生成器（字體控制＋排版確認）</h2>
   <input type="file" id="upload" accept="image/*"><br>
   
   <select id="city">
@@ -58,17 +58,22 @@
   </select>
   
   <br>
-  上排字大小：<input type="number" id="topSize" value="0.08" step="0.01">  
-  下排字大小：<input type="number" id="bottomSize" value="0.04" step="0.01">  
+  上排字大小：
+  <button onclick="adjustSize('top', -0.01)">－</button>
+  <span id="topSizeDisplay">0.08</span>
+  <button onclick="adjustSize('top', 0.01)">＋</button>
+  <br>
+  下排字大小：
+  <button onclick="adjustSize('bottom', -0.01)">－</button>
+  <span id="bottomSizeDisplay">0.04</span>
+  <button onclick="adjustSize('bottom', 0.01)">＋</button>
   <br>
   
-  <button onclick="generate()">生成圖片</button>
+  <button onclick="changeColor()">文字顏色</button>
+  <button onclick="showImage()">排版確認</button>
+  
   <br>
   <canvas id="canvas"></canvas>
-  <br>
-  <button onclick="download()">下載圖片</button>
-  <button onclick="showImage()">顯示圖片</button>
-  
   <br>
   <img id="outputImage" alt="生成的圖片將顯示在這裡">
 
@@ -77,6 +82,13 @@
     const ctx = canvas.getContext("2d");
     let img = new Image();
     img.crossOrigin = "anonymous"; // 避免跨域圖片導致下載全黑
+
+    // 預設字體大小
+    let topSize = 0.08;
+    let bottomSize = 0.04;
+
+    // 當前文字顏色樣式
+    let style = { fill: "black", stroke: "white" };
 
     // 預設載入 IMG_5776.jpeg
     window.onload = function() {
@@ -103,11 +115,24 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
+    // 調整字體大小
+    function adjustSize(target, delta) {
+      if (target === 'top') {
+        topSize = Math.max(0.01, topSize + delta);
+        document.getElementById("topSizeDisplay").innerText = topSize.toFixed(2);
+      } else {
+        bottomSize = Math.max(0.01, bottomSize + delta);
+        document.getElementById("bottomSizeDisplay").innerText = bottomSize.toFixed(2);
+      }
+      generate();
+    }
+
     // 隨機顏色 + 固定白框
-    function pickRandomStyle() {
+    function changeColor() {
       const colors = ["red", "blue", "green", "purple", "orange", "brown", "black"];
       const fill = colors[Math.floor(Math.random() * colors.length)];
-      return { fill: fill, stroke: "white" };
+      style = { fill: fill, stroke: "white" };
+      generate();
     }
 
     function drawTextWithStroke(text, x, y, fontSizeRatio, style) {
@@ -149,7 +174,7 @@
 
     // 生成圖片
     async function generate() {
-      if (!img.src) return alert("請先上傳圖片！");
+      if (!img.src) return;
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -157,10 +182,6 @@
       const city = document.getElementById("city").value;
       const dateInfo = getDateInfo();
       const weatherInfo = await getWeather(city);
-      const style = pickRandomStyle();
-
-      const topSize = parseFloat(document.getElementById("topSize").value);
-      const bottomSize = parseFloat(document.getElementById("bottomSize").value);
 
       // 上方問候語
       drawTextWithStroke("親友們，早安！", canvas.width / 2, canvas.height * 0.15, topSize, style);
@@ -175,23 +196,7 @@
       });
     }
 
-    // 下載圖片（自動偵測 iOS）
-    function download() {
-      const imageURL = canvas.toDataURL("image/png");
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (isIOS) {
-        window.open(imageURL, "_blank"); // iOS：開新分頁顯示圖片，手動長按存檔
-      } else {
-        const link = document.createElement("a");
-        link.href = imageURL;
-        link.download = "早安圖.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    }
-
-    // 顯示圖片（方便右鍵另存或長按存檔）
+    // 顯示圖片（排版確認）
     function showImage() {
       const imageURL = canvas.toDataURL("image/png");
       document.getElementById("outputImage").src = imageURL;

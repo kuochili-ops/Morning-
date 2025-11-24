@@ -33,16 +33,8 @@
     <option value="高雄市">高雄市</option>
     <option value="新竹市">新竹市</option>
     <option value="嘉義市">嘉義市</option>
-    <option value="基隆市">基隆市</option>
-    <option value="宜蘭縣">宜蘭縣</option>
     <option value="花蓮縣">花蓮縣</option>
     <option value="台東縣">台東縣</option>
-    <option value="屏東縣">屏東縣</option>
-    <option value="苗栗縣">苗栗縣</option>
-    <option value="彰化縣">彰化縣</option>
-    <option value="南投縣">南投縣</option>
-    <option value="雲林縣">雲林縣</option>
-    <option value="嘉義縣">嘉義縣</option>
   </select>
   
   <button onclick="generate()">生成圖片</button>
@@ -80,34 +72,58 @@
       ctx.fillText(text, x, y);
     }
 
-    function generate() {
+    // 取得今日日期與星期
+    function getDateInfo() {
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+      const weekStr = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"][today.getDay()];
+      return `${dateStr} ${weekStr}`;
+    }
+
+    // 模擬農曆（可改成串接 API）
+    function getLunarDate() {
+      return "農曆十月初四"; // TODO: 串接農曆 API
+    }
+
+    // 模擬天氣（可改成串接中央氣象局 API）
+    async function getWeather(city) {
+      // TODO: 串接中央氣象局 API
+      return `天氣：晴，氣溫 22~28℃`;
+    }
+
+    async function generate() {
       if (!img.src) return alert("請先上傳圖片！");
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       const city = document.getElementById("city").value;
+      const dateInfo = getDateInfo();
+      const lunarInfo = getLunarDate();
+      const weatherInfo = await getWeather(city);
 
       // 上方問候語：紅字白框
-      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.1, 0.06, "red", "white");
+      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.1, 0.08, "red", "white");
 
       // 下方資訊：白字紅框
       const lines = [
         `📍 ${city}`,
-        "📅 2025年11月24日 星期一",
-        "🌙 農曆十月初四",
-        "☀️ 天氣：晴，氣溫 22~28℃"
+        `📅 ${dateInfo}`,
+        `🌙 ${lunarInfo}`,
+        `☀️ ${weatherInfo}`
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.85 + i * canvas.height * 0.05, 0.04, "white", "red");
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.8 + i * canvas.height * 0.06, 0.05, "white", "red");
       });
     }
 
     function download() {
       const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
       link.download = "早安圖.png";
-      link.href = canvas.toDataURL();
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>

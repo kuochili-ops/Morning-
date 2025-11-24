@@ -23,9 +23,9 @@
   <h2>🌅 早安圖生成器</h2>
   <input type="file" id="upload" accept="image/*"><br>
   
-  <!-- 縣市選單 -->
+  <!-- 縣市選單，預設台北市 -->
   <select id="city">
-    <option value="台北市">台北市</option>
+    <option value="台北市" selected>台北市</option>
     <option value="新北市">新北市</option>
     <option value="桃園市">桃園市</option>
     <option value="台中市">台中市</option>
@@ -47,6 +47,17 @@
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     let img = new Image();
+
+    // 預設載入 IMG_5776.jpeg
+    window.onload = function() {
+      img.src = "IMG_5776.jpeg"; // 確保此檔案放在同一資料夾
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        generate(); // 預設生成一次
+      };
+    };
 
     // 上傳圖片
     document.getElementById("upload").addEventListener("change", function(e) {
@@ -71,11 +82,10 @@
     ];
     function pickStyle() {
       const today = new Date();
-      const index = today.getDate() % styles.length; // 每天換一組
+      const index = today.getDate() % styles.length;
       return styles[index];
     }
 
-    // 繪製文字
     function drawTextWithStroke(text, x, y, fontSizeRatio, style) {
       const fontSize = Math.round(canvas.height * fontSizeRatio);
       ctx.font = `bold ${fontSize}px sans-serif`;
@@ -87,7 +97,6 @@
       ctx.fillText(text, x, y);
     }
 
-    // 日期與星期
     function getDateInfo() {
       const today = new Date();
       const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
@@ -95,18 +104,14 @@
       return `${dateStr} ${weekStr}`;
     }
 
-    // 農曆（假資料，可串接 API）
-    function getLunarDate() {
+    async function getLunarDate() {
       return "農曆十月初四"; // TODO: 串接農曆 API
     }
 
-    // 天氣（假資料，可串接中央氣象局 API）
     async function getWeather(city) {
-      // TODO: 串接中央氣象局 API
-      return `天氣：晴，氣溫 22~28℃`;
+      return `天氣：晴，氣溫 22~28℃`; // TODO: 串接中央氣象局 API
     }
 
-    // 生成圖片
     async function generate() {
       if (!img.src) return alert("請先上傳圖片！");
       canvas.width = img.width;
@@ -115,14 +120,14 @@
 
       const city = document.getElementById("city").value;
       const dateInfo = getDateInfo();
-      const lunarInfo = getLunarDate();
+      const lunarInfo = await getLunarDate();
       const weatherInfo = await getWeather(city);
       const style = pickStyle();
 
-      // 上方問候語
+      // 上方問候語：字體較大
       drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.1, 0.08, style);
 
-      // 下方資訊
+      // 下方資訊：字體縮小
       const lines = [
         `📍 ${city}`,
         `📅 ${dateInfo}`,
@@ -130,11 +135,10 @@
         `☀️ ${weatherInfo}`
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.8 + i * canvas.height * 0.06, 0.05, style);
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.8 + i * canvas.height * 0.05, 0.035, style);
       });
     }
 
-    // 下載圖片
     function download() {
       const link = document.createElement("a");
       link.href = canvas.toDataURL("image/png");

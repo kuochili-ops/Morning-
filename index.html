@@ -18,6 +18,8 @@
       margin: 10px;
     }
   </style>
+  <!-- 引入 chinese-lunar 套件 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chinese-lunar/dist/chinese-lunar.min.js"></script>
 </head>
 <body>
   <h2>🌅 早安圖生成器</h2>
@@ -105,19 +107,11 @@
       return `${dateStr} ${weekStr}`;
     }
 
-    // 農曆 API 範例（需替換成你自己的 API Key）
-    async function getLunarDate() {
-      try {
-        const today = new Date();
-        const y = today.getFullYear();
-        const m = today.getMonth() + 1;
-        const d = today.getDate();
-        const response = await fetch(`https://api.binstd.com/lunar?date=${y}-${m}-${d}&appkey=你的農曆API_KEY`);
-        const data = await response.json();
-        return `農曆${data.result.lunar}`;
-      } catch {
-        return "農曆日期取得失敗";
-      }
+    // 農曆（使用 chinese-lunar 套件）
+    function getLunarDate() {
+      const today = new Date();
+      const lunarDate = ChineseLunar.solarToLunar(today);
+      return `農曆${lunarDate.monthName}${lunarDate.dayName}`;
     }
 
     // 天氣 API（中央氣象局，使用你的授權碼）
@@ -147,7 +141,7 @@
 
       const city = document.getElementById("city").value;
       const dateInfo = getDateInfo();
-      const lunarInfo = await getLunarDate();
+      const lunarInfo = getLunarDate();
       const weatherInfo = await getWeather(city);
       const style = pickStyle();
 

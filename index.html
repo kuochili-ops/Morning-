@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>早安圖生成器（簡化版）</title>
+  <title>早安圖生成器（測試版）</title>
   <style>
     body {
       font-family: sans-serif;
@@ -38,7 +38,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chinese-lunar/dist/chinese-lunar.min.js"></script>
 </head>
 <body>
-  <h2>🌅 早安圖生成器（簡化版）</h2>
+  <h2>🌅 早安圖生成器（測試版）</h2>
   <input type="file" id="upload" accept="image/*"><br>
   <button onclick="generate()">生成圖片</button>
   <br>
@@ -76,7 +76,7 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
-    // 每日字體樣式（固定黑白，避免背景影響）
+    // 固定文字顏色，避免背景影響
     const style = { fill: "black", stroke: "white" };
 
     function drawTextWithStroke(text, x, y, fontSizeRatio) {
@@ -116,7 +116,7 @@
       const lunarInfo = getLunarDate();
 
       // 上方問候語
-      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.1, 0.1);
+      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.15, 0.1);
 
       // 下方資訊
       const lines = [
@@ -124,7 +124,7 @@
         `🌙 ${lunarInfo}`
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.8 + i * canvas.height * 0.08, 0.06);
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.75 + i * canvas.height * 0.1, 0.06);
       });
     }
 

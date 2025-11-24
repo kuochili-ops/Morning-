@@ -4,9 +4,18 @@
   <meta charset="UTF-8">
   <title>早安圖生成器</title>
   <style>
-    body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
-    canvas { border: 1px solid #ccc; margin-top: 20px; }
-    input, button { margin: 10px; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+    input, button {
+      margin: 10px;
+    }
   </style>
 </head>
 <body>
@@ -32,18 +41,24 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
+    function drawTextWithStroke(text, x, y, fontSize, fillColor, strokeColor) {
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = strokeColor;
+      ctx.fillStyle = fillColor;
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
+    }
+
     function generate() {
       if (!img.src) return alert("請先上傳圖片！");
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      // 上方問候語
-      ctx.font = "bold 36px sans-serif";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.fillText("👋 親友們，早安！", canvas.width / 2, 80);
+      // 上方問候語：紅字白框
+      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, 80, 40, "red", "white");
 
-      // 下方資訊
-      ctx.font = "24px sans-serif";
+      // 下方資訊：白字紅框
       const lines = [
         "📍 台北市北投區",
         "📅 2025年11月24日 星期一",
@@ -51,7 +66,7 @@
         "☀️ 天氣：晴，氣溫 22~28℃"
       ];
       lines.forEach((line, i) => {
-        ctx.fillText(line, canvas.width / 2, canvas.height - 120 + i * 30);
+        drawTextWithStroke(line, canvas.width / 2, canvas.height - 140 + i * 30, 24, "white", "red");
       });
     }
 

@@ -144,7 +144,7 @@
       const weatherInfo = await getWeather(city);
       const style = pickRandomStyle();
 
-      // 上方問候語
+      // 上方問候語（移除手掌 emoji）
       drawTextWithStroke("親友們，早安！", canvas.width / 2, canvas.height * 0.15, 0.08, style);
 
       // 下方資訊（更小）
@@ -153,7 +153,7 @@
         `☀️ ${weatherInfo}`
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.75 + i * canvas.height * 0.08, 0.035, style);
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.75 + i * canvas.height * 0.08, 0.03, style);
       });
     }
 

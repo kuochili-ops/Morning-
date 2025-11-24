@@ -8,6 +8,10 @@
       font-family: sans-serif;
       text-align: center;
       background: #f0f0f0;
+      font-size: 22px; /* 整體文字放大 */
+    }
+    h2 {
+      font-size: 28px; /* 標題更大 */
     }
     canvas {
       border: 1px solid #ccc;
@@ -15,7 +19,19 @@
       max-width: 100%;
     }
     input, select, button {
-      margin: 10px;
+      margin: 12px;
+      font-size: 20px; /* 放大選項與按鈕文字 */
+      padding: 10px 18px; /* 增加按鈕與選單的高度與寬度 */
+      border-radius: 6px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #45a049;
     }
   </style>
   <!-- 引入 chinese-lunar 套件 CDN -->
@@ -110,7 +126,7 @@
     // 農曆（使用 chinese-lunar 套件）
     function getLunarDate() {
       const today = new Date();
-      const lunarDate = ChineseLunar.solarToLunar(today);
+      const lunarDate = chineseLunar.solarToLunar(today); // 注意小寫
       return `農曆${lunarDate.monthName}${lunarDate.dayName}`;
     }
 
@@ -146,9 +162,9 @@
       const style = pickStyle();
 
       // 上方問候語：字體較大
-      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.1, 0.08, style);
+      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.1, 0.1, style);
 
-      // 下方資訊：字體縮小
+      // 下方資訊：字體縮小但比之前大一點
       const lines = [
         `📍 ${city}`,
         `📅 ${dateInfo}`,
@@ -156,7 +172,7 @@
         `☀️ ${weatherInfo}`
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.8 + i * canvas.height * 0.05, 0.035, style);
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.8 + i * canvas.height * 0.06, 0.05, style);
       });
     }
 

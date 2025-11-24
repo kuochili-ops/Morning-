@@ -8,10 +8,10 @@
       font-family: sans-serif;
       text-align: center;
       background: #f0f0f0;
-      font-size: 20px; /* 整體文字稍微縮小 */
+      font-size: 20px;
     }
     h2 {
-      font-size: 26px; /* 標題也縮小一點 */
+      font-size: 26px;
     }
     canvas {
       border: 1px solid #ccc;
@@ -20,7 +20,7 @@
     }
     input, select, button {
       margin: 12px;
-      font-size: 18px; /* 按鈕與選單文字縮小 */
+      font-size: 18px;
       padding: 8px 14px;
       border-radius: 6px;
     }
@@ -39,7 +39,6 @@
   <h2>🌅 早安圖生成器（日期＋天氣版）</h2>
   <input type="file" id="upload" accept="image/*"><br>
   
-  <!-- 縣市選單 -->
   <select id="city">
     <option value="臺北市" selected>臺北市</option>
     <option value="新北市">新北市</option>
@@ -89,10 +88,14 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
-    // 固定文字顏色
-    const style = { fill: "black", stroke: "white" };
+    // 隨機顏色 + 固定白框
+    function pickRandomStyle() {
+      const colors = ["red", "blue", "green", "purple", "orange", "brown", "black"];
+      const fill = colors[Math.floor(Math.random() * colors.length)];
+      return { fill: fill, stroke: "white" };
+    }
 
-    function drawTextWithStroke(text, x, y, fontSizeRatio) {
+    function drawTextWithStroke(text, x, y, fontSizeRatio, style) {
       const fontSize = Math.round(canvas.height * fontSizeRatio);
       ctx.font = `bold ${fontSize}px sans-serif`;
       ctx.textAlign = "center";
@@ -139,28 +142,37 @@
       const city = document.getElementById("city").value;
       const dateInfo = getDateInfo();
       const weatherInfo = await getWeather(city);
+      const style = pickRandomStyle();
 
-      // 上方問候語（縮小）
-      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.15, 0.08);
+      // 上方問候語
+      drawTextWithStroke("👋 親友們，早安！", canvas.width / 2, canvas.height * 0.15, 0.08, style);
 
-      // 下方資訊（再縮小）
+      // 下方資訊（更小）
       const lines = [
         `📅 ${dateInfo}`,
         `☀️ ${weatherInfo}`
       ];
       lines.forEach((line, i) => {
-        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.75 + i * canvas.height * 0.08, 0.045);
+        drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.75 + i * canvas.height * 0.08, 0.035, style);
       });
     }
 
-    // 下載圖片
+    // 下載圖片（自動偵測 iOS）
     function download() {
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = "早安圖.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const imageURL = canvas.toDataURL("image/png");
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        // iOS：開新分頁顯示圖片，手動長按存檔
+        window.open(imageURL, "_blank");
+      } else {
+        // 桌面：直接下載
+        const link = document.createElement("a");
+        link.href = imageURL;
+        link.download = "早安圖.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     }
   </script>
 </body>

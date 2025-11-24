@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>早安圖生成器（日期＋天氣版）</title>
+  <title>早安圖生成器（日期＋天氣＋金句版）</title>
   <style>
     body {
       font-family: sans-serif;
@@ -39,7 +39,7 @@
   </style>
 </head>
 <body>
-  <h2>🌅 早安圖生成器（日期＋天氣版）</h2>
+  <h2>🌅 早安圖生成器（日期＋天氣＋金句版）</h2>
   <input type="file" id="upload" accept="image/*"><br>
   
   <select id="city">
@@ -84,6 +84,29 @@
     let topSize = 0.08;
     let bottomSize = 0.04;
     let style = { fill: "black", stroke: "white" };
+
+    // 無聊金句清單
+    const boringQuotes = [
+      "今天的我，依然很普通。",
+      "無聊也是一種生活方式。",
+      "事情不多，但時間很多。",
+      "望著天花板，思考人生的意義。",
+      "咖啡喝完了，還是很無聊。",
+      "滑手機滑到手指發酸。",
+      "無聊到數天花板的裂縫。",
+      "想睡又不想睡，矛盾的靈魂。",
+      "無聊到開始跟自己對話。",
+      "一切都好，只是有點無聊。",
+      "無聊到想研究螞蟻的行走路線。",
+      "無聊是一種平凡的浪漫。",
+      "今天的亮點：沒有亮點。",
+      "無聊到開始數自己打了幾次哈欠。"
+    ];
+
+    function getRandomQuote() {
+      const index = Math.floor(Math.random() * boringQuotes.length);
+      return boringQuotes[index];
+    }
 
     window.onload = function() {
       img.src = "IMG_5776.jpeg"; 
@@ -170,12 +193,14 @@
       const city = document.getElementById("city").value;
       const dateInfo = getDateInfo();
       const weatherInfo = await getWeather(city);
+      const quote = getRandomQuote();
 
       drawTextWithStroke("親友們，早安！", canvas.width / 2, canvas.height * 0.15, topSize, style);
 
       const lines = [
         `📅 ${dateInfo}`,
-        `☀️ ${weatherInfo}`
+        `☀️ ${weatherInfo}`,
+        `💡 ${quote}`
       ];
       lines.forEach((line, i) => {
         drawTextWithStroke(line, canvas.width / 2, canvas.height * 0.70 + i * canvas.height * 0.08, bottomSize, style);

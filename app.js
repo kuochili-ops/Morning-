@@ -50,6 +50,7 @@ document.getElementById("upload").addEventListener("change", function(e) {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      generate();
     };
   };
   reader.readAsDataURL(e.target.files[0]);
@@ -106,4 +107,24 @@ async function getWeather(city) {
   try {
     const response = await fetch("https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWA-A6F3874E-27F3-4AA3-AF5A-96B365798F79&format=JSON");
     const data = await response.json();
-    const location = data.records.location.find(loc => loc.locationName ===
+    const location = data.records.location.find(loc => loc.locationName === city);
+    if (location) {
+      const wx = location.weatherElement.find(el => el.elementName === "Wx").time[0].parameter.parameterName;
+      const minT = location.weatherElement.find(el => el.elementName === "MinT").time[0].parameter.parameterName;
+      const maxT = location.weatherElement.find(el => el.elementName === "MaxT").time[0].parameter.parameterName;
+      return `${city}：${wx}，氣溫 ${minT}~${maxT}℃`;
+    }
+    return "天氣資料取得失敗";
+  } catch {
+    return "天氣資料取得失敗";
+  }
+}
+
+async function generate() {
+  if (!img.src) return;
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  const city = document.getElementById("city").value;
+  const dateInfo

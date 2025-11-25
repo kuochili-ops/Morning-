@@ -199,6 +199,7 @@
     };
     reader.readAsDataURL(e.target.files[0]);
   });
+
   function drawTextWithStroke(text, x, y, fontSizeRatio, style) {
     const fontSize = Math.round(canvas.height * fontSizeRatio);
     ctx.font = `bold ${fontSize}px sans-serif`;
@@ -214,7 +215,19 @@
     const today = new Date();
     const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
     const weekStr = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"][today.getDay()];
-    return `${dateStr} ${weekStr}`;
+
+    // 農曆日期
+    const lunarFormatter = new Intl.DateTimeFormat("zh-TW-u-ca-chinese", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+    const lunarStr = lunarFormatter.format(today);
+
+    return {
+      solar: `${dateStr} ${weekStr}`,
+      lunar: `農曆 ${lunarStr}`
+    };
   }
 
   async function getWeather(city) {
@@ -244,23 +257,22 @@
     const dateInfo = getDateInfo();
     const weatherInfo = await getWeather(city);
 
-    // 使用者輸入金句，留空則隨機
     const customQuote = document.getElementById("customQuote").value.trim();
     const quote = customQuote || getRandomQuote();
-
     const topText = document.getElementById("topText").value.trim() || "親友們，早安！";
 
     // 上排文字
     drawTextWithStroke(topText, canvas.width / 2, canvas.height * (0.15 + topOffset), topSize, style);
 
-    // 下排三行
+    // 下排四行：西曆＋星期、農曆、天氣、金句
     const lines = [
-      `📅 ${dateInfo}`,
+      `📅 ${dateInfo.solar}`,
+      `🌙 ${dateInfo.lunar}`,
       `☀️ ${weatherInfo}`,
       `💡 ${quote}`
     ];
     lines.forEach((line, i) => {
-      drawTextWithStroke(line, canvas.width / 2, canvas.height * (0.70 + bottomOffset) + i * canvas.height * 0.08, bottomSize, style);
+      drawTextWithStroke(line, canvas.width / 2, canvas.height * (0.65 + bottomOffset) + i * canvas.height * 0.06, bottomSize, style);
     });
   }
 
@@ -269,5 +281,6 @@
     document.getElementById("outputImage").src = imageURL;
   }
 </script>
+
 </body>
 </html>
